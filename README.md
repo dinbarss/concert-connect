@@ -1,14 +1,13 @@
-# Concert-connect
+# Concert Connect
+
+Concert Connect on verkkosovellus, jossa käyttäjät voivat myydä ja ostaa konserttilippuja.
 
 ## Sovelluksen toiminnot
 
-* Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
-* Käyttäjä pystyy lisäämään, muokkaamaan ja poistamaan konserttilippuilmoituksia.
-* Käyttäjä näkee sovellukseen lisätyt liput (omat ja muiden käyttäjien).
-* Käyttäjä pystyy etsimään lippuja hakusanalla (esim. artistin, paikan tai päivämäärän perusteella).
-* Sovelluksessa on käyttäjäsivut, jotka näyttävät tilastoja ja käyttäjän lisäämät liput.
-* Käyttäjä pystyy valitsemaan lipuille yhden tai useamman luokittelun (esim. K-pop, J-pop).
-* Käyttäjä pystyy lisäämään kommentteja ja kysymyksiä lippuilmoituksiin.
+* Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen
+* Käyttäjä pystyy lisäämään, muokkaamaan ja poistamaan konserttilippuilmoituksia
+* Käyttäjä näkee sovellukseen lisätyt liput (omat ja muiden käyttäjien)
+* Käyttäjä pystyy etsimään lippuja hakusanalla (artisti, paikka, kuvaus)
 
 ## Sovelluksen asennus
 
@@ -30,3 +29,14 @@ Voit käynnistää sovelluksen näin:
 ```
 $ flask run
 ```
+
+## Testaaminen
+
+1. **Rekisteröidy**: Luo uusi tunnus "Rekisteröidy"-linkistä
+2. **Kirjaudu sisään**: Kirjaudu luomallasi tunnuksella
+3. **Kirjaudu ulos**: Kirjaudu ulos järjestelmästä  
+4. **Lisää lippu**: Lisää uusi konserttilipun ilmoitus
+5. **Etsi**: Käytä hakutoimintoa etsiäksesi lippuja
+6. **Muokkaa/poista**: Kokeile omien lippujesi muokkaamista ja poistamista
+
+Sovellus käynnistyy osoitteeseen: http://127.0.0.1:5000

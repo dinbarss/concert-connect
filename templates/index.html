@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Concert Connect</title>
+</head>
+<body>
+  <h1>Concert Connect</h1>
+  
+  <!-- Show logged in status -->
+  <p>
+    {% if session.username %}
+      Kirjautuneena: <strong>{{ session.username }}</strong> | 
+      <a href="/logout">Kirjaudu ulos</a>
+    {% else %}
+      <a href="/login">Kirjaudu</a> | 
+      <a href="/register">Rekisteröidy</a>
+    {% endif %}
+  </p>
+  
+  <p>
+    Liput saatavilla: {{ count }}
+  </p>
+  
+  <p>
+    <a href="/new">Lisää lippu</a>
+  </p>
+
+  <!-- Search form -->
+  <form action="/" method="get">
+    <p>
+      <input type="text" name="search" placeholder="Etsi artistia, paikkaa..." 
+             value="{{ search_query if search_query }}">
+      <input type="submit" value="Etsi">
+      {% if search_query %}
+        <a href="/">Näytä kaikki</a>
+      {% endif %}
+    </p>
+  </form>
+  
+  <hr />
+  
+  <!-- Tickets list -->
+  {% for ticket in tickets %}
+  <div>
+    <h3>{{ ticket.artist }} - {{ ticket.venue }}</h3>
+    <p><strong>Päivämäärä:</strong> {{ ticket.event_date }}</p>
+    <p><strong>Hinta:</strong> {{ ticket.price }} €</p>
+    <p><strong>Kuvaus:</strong> {{ ticket.description if ticket.description else "Ei kuvausta" }}</p>
+    <p><strong>Myyjä:</strong> {{ ticket.username }}</p>
+    
+    <!-- Show edit/delete buttons only for own tickets -->
+    {% if session.username == ticket.username %}
+    <p>
+      <a href="/edit/{{ ticket.id }}">Muokkaa</a> | 
+      <a href="/delete/{{ ticket.id }}">Poista</a>
+    </p>
+    {% endif %}
+  </div>
+  <hr />
+  {% endfor %}
+</body>
+</html>
