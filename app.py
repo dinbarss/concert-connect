@@ -42,7 +42,7 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
+        return render_template("login.html", error="Tunnus on jo varattu")
     password_hash = generate_password_hash(password1)
 
     try:
@@ -105,7 +105,7 @@ def send():
     
     if not user:
         db_conn.close()
-        return "Käyttäjää ei löytynyt"
+        return render_template("login.html", error="Käyttäjää ei löytynyt")
     
     user_id = user[0]
     
@@ -151,7 +151,7 @@ def edit_ticket(ticket_id):
     # Check if the ticket belongs to the logged-in user
     if not ticket or not user or ticket['user_id'] != user[0]:
         db_conn.close()
-        return "Ei oikeutta muokata tätä lippua"
+        return render_template("login.html", error="Ei oikeutta muokata tätä lippua")
     
     db_conn.close()
     return render_template("edit.html", ticket=ticket)
