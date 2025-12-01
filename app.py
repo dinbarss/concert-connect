@@ -25,7 +25,7 @@ def login():
         session["username"] = username
         return redirect("/")
     else:
-        return "VIRHE: väärä tunnus tai salasana"
+        return render_template("login.html", error="Väärä tunnus tai salasana")
 
 @app.route("/logout")
 def logout():
