@@ -31,10 +31,3 @@ CREATE TABLE ticket_categories (
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
--- Insert some categories
-INSERT INTO categories (name) VALUES 
-    ('K-pop'), 
-    ('J-pop'), 
-    ('Anime'), 
-    ('Rock'), 
-    ('Pop');
