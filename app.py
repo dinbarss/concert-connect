@@ -140,7 +140,12 @@ def edit_ticket(ticket_id):
     
     db_conn = sqlite3.connect("database.db")
     db_conn.row_factory = sqlite3.Row
-    ticket = db_conn.execute("SELECT * FROM tickets WHERE id = ?", [ticket_id]).fetchone()
+    # If you only need basic info for editing:
+    ticket = db_conn.execute("""
+        SELECT id, user_id, artist, venue, event_date, price, section, row, seat, description
+        FROM tickets 
+        WHERE id = ?
+    """, [ticket_id]).fetchone()
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
     
     # Check if the ticket belongs to the logged-in user
