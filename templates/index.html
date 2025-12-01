@@ -4,6 +4,20 @@
   <title>Concert Connect</title>
 </head>
 <body>
+
+  <nav>
+    <a href="/">Etusivu</a> | 
+    {% if session.username %}
+        <a href="/new">Lisää lippu</a> | 
+        Kirjautuneena: {{ session.username }} | 
+        <a href="/logout">Kirjaudu ulos</a>
+    {% else %}
+        <a href="/login">Kirjaudu</a> | 
+        <a href="/register">Rekisteröidy</a>
+    {% endif %}
+  </nav>
+  <hr>
+
   <h1>Concert Connect</h1>
   
   <!-- Show logged in status -->

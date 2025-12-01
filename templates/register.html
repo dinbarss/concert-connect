@@ -5,6 +5,18 @@
 </head>
 
 <body>
+  <nav>
+    <a href="/">Etusivu</a> | 
+    {% if session.username %}
+        <a href="/new">Lisää lippu</a> | 
+        Kirjautuneena: {{ session.username }} | 
+        <a href="/logout">Kirjaudu ulos</a>
+    {% else %}
+        <a href="/login">Kirjaudu</a> | 
+        <a href="/register">Rekisteröidy</a>
+    {% endif %}
+  </nav>
+  <hr>
   <form action="/create" method="post">
     <p>
       Tunnus: <br />
@@ -19,7 +31,10 @@
       <input type="password" name="password2" />
     </p>
     <input type="submit" value="Luo tunnus" />
-  </form>
+    <p>
+      Onko sinulla jo tunnus? <a href="/login">Kirjaudu sisään</a>
+    </p> 
+ </form>
 </body>
 
 </html>
