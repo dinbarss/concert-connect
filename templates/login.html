@@ -1,32 +1,13 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Kirjautuminen</title>
-</head>
+{% block title %}Kirjautuminen{% endblock %}
 
-<body>
-  <nav>
-    <a href="/">Etusivu</a> | 
-    {% if session.username %}
-        <a href="/new">Lisää lippu</a> | 
-        Kirjautuneena: {{ session.username }} | 
-        <a href="/logout">Kirjaudu ulos</a>
-    {% else %}
-        <a href="/login">Kirjaudu</a> | 
-        <a href="/register">Rekisteröidy</a>
-    {% endif %}
-  </nav>
-  <hr>
+{% block content %}
 
-  {% if session.username %}
-  <p>
-    Olet kirjautunut nimellä {{ session.username }}
-  </p>
-  <p>
-    <a href="/logout">Kirjaudu ulos</a>
-  </p>
-  {% else %}
+{% if session.username %}
+  <p>Olet kirjautunut nimellä {{ session.username }}</p>
+  <p><a href="/logout">Kirjaudu ulos</a>
+{% else %}
 
   {% if error %}
   <p style="color: red;">{{ error }}</p>
@@ -43,7 +24,7 @@
     </p>
     <input type="submit" value="Kirjaudu" />
   </form>
-  {% endif %}
-</body>
 
-</html>
+{% endif %}
+
+{% endblock %}

@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Lisää uusi lippu</title>
-</head>
-<body>
+{% extends "layout.html" %}
 
-  <nav>
-    <a href="/">Etusivu</a> | 
-    {% if session.username %}
-        <a href="/new">Lisää lippu</a> | 
-        Kirjautuneena: {{ session.username }} | 
-        <a href="/logout">Kirjaudu ulos</a>
-    {% else %}
-        <a href="/login">Kirjaudu</a> | 
-        <a href="/register">Rekisteröidy</a>
-    {% endif %}
-  </nav>
-  <hr>
+{% block title %}Lisää uusi lippu{% endblock %}
+
+{% block content %}
 
   <h1>Lisää uusi konserttilipu</h1>
   
@@ -31,7 +17,7 @@
     </p>
     <p>
       Päivämäärä: <br />
-      <input type="date" name="event_date" required />
+      <input type="date" name="event_date" required id="event_date" />
     </p>
     <p>
       Hinta (€): <br />
@@ -45,5 +31,9 @@
       <input type="submit" value="Lisää lippu" />
     </p>
   </form>
-</body>
-</html>
+
+<script>
+  document.getElementById("event_date").min = new Date().toISOString().split("T")[0];
+</script>
+
+{% endblock %}

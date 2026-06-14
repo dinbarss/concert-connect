@@ -1,25 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Muokkaa lippua</title>
-</head>
-<body>
+{% extends "layout.html" %}
 
-  <nav>
-    <a href="/">Etusivu</a> | 
-    {% if session.username %}
-        <a href="/new">Lisää lippu</a> | 
-        Kirjautuneena: {{ session.username }} | 
-        <a href="/logout">Kirjaudu ulos</a>
-    {% else %}
-        <a href="/login">Kirjaudu</a> | 
-        <a href="/register">Rekisteröidy</a>
-    {% endif %}
-  </nav>
-  <hr>
+{% block title %}Muokkaa lippua{% endblock %}
 
-  <h1>Muokkaa lippua</h1>
-  
+{% block content %}
+
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+
+
   <form action="/update/{{ ticket.id }}" method="post">
     <p>
       Artisti: <br />
@@ -31,7 +20,7 @@
     </p>
     <p>
       Päivämäärä: <br />
-      <input type="date" name="event_date" value="{{ ticket.event_date }}" required />
+      <input type="date" name="event_date" value="{{ ticket.event_date }}" required id="event_date" />
     </p>
     <p>
       Hinta (€): <br />
@@ -47,5 +36,9 @@
   </form>
   
   <p><a href="/">Takaisin etusivulle</a></p>
-</body>
-</html>
+
+<script>
+  document.getElementById("event_date").min = new Date().toISOString().split("T")[0];
+</script>
+  
+{% endblock %}
