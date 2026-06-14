@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Concert Connect</title>
+    <link rel="stylesheet" href="/static/style_main.css">
+</head>
+<body>
+    <nav>
+        <a href="/">Etusivu</a>
+        {% if session.username %}
+            <span>{{ session.username }}</span>
+            <a href="/logout">Kirjaudu ulos</a>
+        {% else %}
+            <a href="/login">Kirjaudu</a>
+            <a href="/register">Rekisteröidy</a>
+        {% endif %}
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>
