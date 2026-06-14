@@ -1,14 +1,25 @@
 import sqlite3
 from flask import Flask
 from flask import redirect, render_template, request
+from datetime import date
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from flask import session
 import config
 import db
+import users
+
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    user_tickets = users.get_tickets(user_id)
+    return render_template("user.html", user=user, tickets=user_tickets)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -54,6 +65,7 @@ def create():
     # Redirect to login after registration
     return redirect("/login")
 
+# Ticket search
 @app.route("/")
 def index():
     search_query = request.args.get('search', '')  # Get search parameter from URL
@@ -99,6 +111,9 @@ def send():
     event_date = request.form["event_date"]
     price = request.form["price"]
     description = request.form["description"]
+
+    if event_date < str(date.today()):
+        return render_template("new.html", error="Et voi valita mennyttä päivämäärää")
     
     db_conn = sqlite3.connect("database.db")
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
@@ -115,7 +130,7 @@ def send():
     db_conn.close()
     return redirect("/")
 
-# FIX 4: Add delete function
+# Delete ticket
 @app.route("/delete/<int:ticket_id>")
 def delete_ticket(ticket_id):
     if "username" not in session:
@@ -132,7 +147,7 @@ def delete_ticket(ticket_id):
     db_conn.close()
     return redirect("/")
 
-# FIX 4: Add edit function
+# Edit ticket
 @app.route("/edit/<int:ticket_id>")
 def edit_ticket(ticket_id):
     if "username" not in session:
@@ -166,24 +181,18 @@ def update_ticket(ticket_id):
     event_date = request.form["event_date"]
     price = request.form["price"]
     description = request.form["description"]
-    
+
     db_conn = sqlite3.connect("database.db")
+    db_conn.row_factory = sqlite3.Row
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
-    
-    if user:
-        db_conn.execute('''
-            UPDATE tickets 
-            SET artist=?, venue=?, event_date=?, price=?, description=?
-            WHERE id=? AND user_id=?
-        ''', [artist, venue, event_date, price, description, ticket_id, user[0]])
-        db_conn.commit()
-    
-    db_conn.close()
-    return redirect("/")
-    
-    # Check ownership before updating
     ticket = db_conn.execute("SELECT user_id FROM tickets WHERE id = ?", [ticket_id]).fetchone()
-    if ticket and user and ticket[0] == user[0]:
+
+    # the date can't be in the past
+    if event_date < str(date.today()):
+        db_conn.close()
+        return render_template("edit.html", error="Et voi valita mennyttä päivämäärää", ticket=ticket)
+    
+    if user and ticket and ticket["user_id"] == user[0]:
         db_conn.execute('''
             UPDATE tickets 
             SET artist=?, venue=?, event_date=?, price=?, description=?
@@ -193,3 +202,6 @@ def update_ticket(ticket_id):
     
     db_conn.close()
     return redirect("/")
+
+if __name__ == '__main__':
+    app.run(debug=True)
