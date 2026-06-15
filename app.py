@@ -24,6 +24,50 @@ def show_user(user_id):
         abort(404)
     user_tickets = users.get_tickets(user_id)
     return render_template("user.html", user=user, tickets=user_tickets)
+@app.route("/ticket/<int:ticket_id>")
+def show_ticket(ticket_id):
+    db_conn = sqlite3.connect("database.db")
+    db_conn.row_factory = sqlite3.Row
+    ticket = db_conn.execute("""
+        SELECT t.*, u.username, c.name as category_name
+        FROM tickets t
+        JOIN users u ON t.user_id = u.id
+        LEFT JOIN categories c ON t.category_id = c.id
+        WHERE t.id = ?
+    """, [ticket_id]).fetchone()
+    
+    comments = db_conn.execute("""
+        SELECT cm.content, cm.created_at, u.username
+        FROM comments cm
+        JOIN users u ON cm.user_id = u.id
+        WHERE cm.ticket_id = ?
+        ORDER BY cm.created_at ASC
+    """, [ticket_id]).fetchall()
+    
+    db_conn.close()
+    
+    if not ticket:
+        abort(404)
+    
+    return render_template("ticket.html", ticket=ticket, comments=comments)
+
+@app.route("/comment/<int:ticket_id>", methods=["POST"])
+def add_comment(ticket_id):
+    if "username" not in session:
+        return redirect("/login")
+    check_csrf()
+    
+    content = request.form["content"]
+    if not content:
+        return redirect(f"/ticket/{ticket_id}")
+    
+    db_conn = sqlite3.connect("database.db")
+    user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
+    db_conn.execute("INSERT INTO comments (ticket_id, user_id, content) VALUES (?, ?, ?)",
+                   [ticket_id, user[0], content])
+    db_conn.commit()
+    db_conn.close()
+    return redirect(f"/ticket/{ticket_id}")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

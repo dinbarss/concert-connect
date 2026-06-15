@@ -28,6 +28,11 @@ body {
         color: #583eff;
     }
 
+    a.ticket-link {
+        color: #25ff3b;
+        background-color: #004812c8;
+    }
+
     button {
         background-color: #e63946;
         color: rgb(33, 108, 41);

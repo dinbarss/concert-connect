@@ -23,7 +23,7 @@
   <!-- Tickets list -->
   {% for ticket in tickets %}
   <div>
-    <h3>{{ ticket.artist }} - {{ ticket.venue }}</h3>
+    <h3><a href="/ticket/{{ ticket.id }}" class="ticket-link">{{ ticket.artist }} - {{ ticket.venue }}</a></h3>
     <p><strong>Päivämäärä:</strong> {{ ticket.event_date }}</p>
     <p><strong>Hinta:</strong> {{ ticket.price }} €</p>
     <p><strong>Kuvaus:</strong> {{ ticket.description if ticket.description else "Ei kuvausta" }}</p>

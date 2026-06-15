@@ -25,10 +25,13 @@ CREATE TABLE tickets (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE ticket_categories (
-    ticket_id INTEGER,
-    category_id INTEGER,
-    FOREIGN KEY (ticket_id) REFERENCES tickets(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id)
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY,
+    ticket_id INTEGER REFERENCES tickets(id),
+    user_id INTEGER REFERENCES users(id),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
 
