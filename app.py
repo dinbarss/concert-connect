@@ -34,7 +34,12 @@ def login():
     password = request.form["password"]
 
     sql = "SELECT password_hash FROM users WHERE username = ?"
-    password_hash = db.query(sql, [username])[0][0]
+    result = db.query(sql, [username])
+
+    if not result:
+        return render_template("login.html", error="Väärä tunnus tai salasana")
+
+    password_hash = result[0][0]
 
     if check_password_hash(password_hash, password):
         session["username"] = username
@@ -90,9 +95,10 @@ def index():
     else:
         # Show all tickets if no search
         tickets = db_conn.execute('''
-            SELECT t.id, t.user_id, t.artist, t.venue, t.event_date, t.price, t.description, u.username 
+            SELECT t.id, t.user_id, t.artist, t.venue, t.event_date, t.price, t.description, u.username, c.name as category_name
             FROM tickets t 
             JOIN users u ON t.user_id = u.id 
+            LEFT JOIN categories c ON t.category_id = c.id
             ORDER BY t.created_at DESC
         ''').fetchall()
     
@@ -100,11 +106,12 @@ def index():
     count = len(tickets)
     return render_template("index.html", count=count, tickets=tickets, search_query=search_query)
 
-@app.route("/new")
-def new():
+@app.route("/new_ticket")
+def new_ticket():
     if "username" not in session:
         return redirect("/login")
-    return render_template("new.html")
+    categories = db.query("SELECT id, name FROM categories", [])
+    return render_template("new_ticket.html", categories=categories)
 
 @app.route("/send", methods=["POST"])
 def send():
@@ -117,9 +124,10 @@ def send():
     event_date = request.form["event_date"]
     price = request.form["price"]
     description = request.form["description"]
+    category_id = request.form["category_id"]
 
     if event_date < str(date.today()):
-        return render_template("new.html", error="Et voi valita mennyttä päivämäärää")
+        return render_template("new_ticket.html", error="Et voi valita mennyttä päivämäärää")
     
     db_conn = sqlite3.connect("database.db")
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
@@ -130,8 +138,8 @@ def send():
     
     user_id = user[0]
     
-    db_conn.execute("INSERT INTO tickets (user_id, artist, venue, event_date, price, description) VALUES (?, ?, ?, ?, ?, ?)", 
-                   [user_id, artist, venue, event_date, price, description])
+    db_conn.execute("INSERT INTO tickets (user_id, artist, venue, event_date, price, category_id, description) VALUES (?, ?, ?, ?, ?, ?)", 
+                   [user_id, artist, venue, event_date, price, category_id, description])
     db_conn.commit()
     db_conn.close()
     return redirect("/")
@@ -165,10 +173,11 @@ def edit_ticket(ticket_id):
     db_conn.row_factory = sqlite3.Row
     # If you only need basic info for editing:
     ticket = db_conn.execute("""
-        SELECT id, user_id, artist, venue, event_date, price, section, row, seat, description
+        SELECT id, user_id, artist, venue, event_date, price, section, row, seat, description, category_id
         FROM tickets 
         WHERE id = ?
     """, [ticket_id]).fetchone()
+    
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
     
     # Check if the ticket belongs to the logged-in user
@@ -176,8 +185,10 @@ def edit_ticket(ticket_id):
         db_conn.close()
         return render_template("login.html", error="Ei oikeutta muokata tätä lippua")
     
+    categories = db.query("SELECT id, name FROM categories", [])
+
     db_conn.close()
-    return render_template("edit.html", ticket=ticket)
+    return render_template("edit.html", ticket=ticket, categories=categories)
 
 @app.route("/update/<int:ticket_id>", methods=["POST"])
 def update_ticket(ticket_id):
@@ -190,6 +201,7 @@ def update_ticket(ticket_id):
     event_date = request.form["event_date"]
     price = request.form["price"]
     description = request.form["description"]
+    category_id = request.form["category_id"]
 
     db_conn = sqlite3.connect("database.db")
     db_conn.row_factory = sqlite3.Row
@@ -204,9 +216,9 @@ def update_ticket(ticket_id):
     if user and ticket and ticket["user_id"] == user[0]:
         db_conn.execute('''
             UPDATE tickets 
-            SET artist=?, venue=?, event_date=?, price=?, description=?
+            SET artist=?, venue=?, event_date=?, price=?, description=?, category_id=?
             WHERE id=?
-        ''', [artist, venue, event_date, price, description, ticket_id])
+        ''', [artist, venue, event_date, price, description, category_id, ticket_id])
         db_conn.commit()
     
     db_conn.close()

@@ -4,6 +4,11 @@ CREATE TABLE users (
     password_hash TEXT
 );
 
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
 CREATE TABLE tickets (
     id INTEGER PRIMARY KEY,
     user_id INTEGER,
@@ -11,17 +16,13 @@ CREATE TABLE tickets (
     venue TEXT NOT NULL,
     event_date TEXT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    category_id INTEGER REFERENCES categories(id),
     section TEXT,
     row TEXT,
     seat TEXT,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE TABLE categories (
-    id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE
 );
 
 CREATE TABLE ticket_categories (
