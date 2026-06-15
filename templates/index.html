@@ -32,8 +32,13 @@
     <!-- Show edit/delete buttons only for own tickets -->
     {% if session.username == ticket.username %}
     <p>
-      <a href="/edit/{{ ticket.id }}">Muokkaa</a> | 
-      <a href="/delete/{{ ticket.id }}">Poista</a>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a href="/edit/{{ ticket.id }}">Muokkaa</a>
+        <form action="/delete/{{ ticket.id }}" method="post" style="margin:0;">
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+          <button type="submit" onclick="return confirm('Haluatko varmasti poistaa tämän lipun?')">Poista</button>
+        </form>
+      </div>
     </p>
     {% endif %}
   </div>

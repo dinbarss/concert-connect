@@ -11,6 +11,7 @@
   {% endif %}
 
   <form action="/create" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>
       Tunnus: <br />
       <input type="text" name="username" />
@@ -28,5 +29,5 @@
       Onko sinulla jo tunnus? <a href="/login">Kirjaudu sisään</a>
     </p> 
  </form>
- 
+
 {% endblock %}

@@ -6,8 +6,6 @@
 
   <h1>Käyttäjä {{ user.username }}</h1>
 
-  <h2>Tilastoja</h2>
-  <p>Lippuja myynnissä: {{ tickets | count }}</p>
   {% if tickets %}
   <p>Vanhin ilmoitus lisätty: {{ tickets[-1].created_at }}</p>
   <p>Viimeisin ilmoitus lisätty: {{ tickets[0].created_at }}</p>

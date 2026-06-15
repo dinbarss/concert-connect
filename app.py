@@ -1,10 +1,10 @@
 import sqlite3
+import secrets
 from flask import Flask
-from flask import redirect, render_template, request
+from flask import redirect, render_template, request, abort, session
 from datetime import date
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
-from flask import session
 import config
 import db
 import users
@@ -12,6 +12,10 @@ import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
@@ -34,6 +38,7 @@ def login():
 
     if check_password_hash(password_hash, password):
         session["username"] = username
+        session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
     else:
         return render_template("login.html", error="Väärä tunnus tai salasana")
@@ -53,7 +58,7 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return render_template("login.html", error="Syöttämäsi salasanat eivät täsmää. Yritä uudelleen.")
+        return render_template("register.html", error="Syöttämäsi salasanat eivät täsmää. Yritä uudelleen.")
     password_hash = generate_password_hash(password1)
 
     try:
@@ -61,9 +66,9 @@ def create():
         db.execute(sql, [username, password_hash])
     except sqlite3.IntegrityError:
         return render_template("login.html", error="Tunnus on jo varattu")
-
-    # Redirect to login after registration
-    return redirect("/login")
+    
+    # Redirect to login after registration and pass a success message
+    return redirect("/login?registered=1")
 
 # Ticket search
 @app.route("/")
@@ -105,7 +110,8 @@ def new():
 def send():
     if "username" not in session:
         return redirect("/login")
-    
+    check_csrf()
+
     artist = request.form["artist"]
     venue = request.form["venue"]
     event_date = request.form["event_date"]
@@ -131,16 +137,18 @@ def send():
     return redirect("/")
 
 # Delete ticket
-@app.route("/delete/<int:ticket_id>")
+@app.route("/delete/<int:ticket_id>", methods=["POST"])
 def delete_ticket(ticket_id):
     if "username" not in session:
         return redirect("/login")
-    
+    check_csrf()
+
     db_conn = sqlite3.connect("database.db")
     
     # Check if the ticket belongs to the logged-in user
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
     if user:
+
         db_conn.execute("DELETE FROM tickets WHERE id = ? AND user_id = ?", [ticket_id, user[0]])
         db_conn.commit()
     
@@ -152,7 +160,7 @@ def delete_ticket(ticket_id):
 def edit_ticket(ticket_id):
     if "username" not in session:
         return redirect("/login")
-    
+
     db_conn = sqlite3.connect("database.db")
     db_conn.row_factory = sqlite3.Row
     # If you only need basic info for editing:
@@ -175,7 +183,8 @@ def edit_ticket(ticket_id):
 def update_ticket(ticket_id):
     if "username" not in session:
         return redirect("/login")
-    
+    check_csrf()
+
     artist = request.form["artist"]
     venue = request.form["venue"]
     event_date = request.form["event_date"]

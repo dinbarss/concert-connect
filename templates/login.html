@@ -13,7 +13,12 @@
   <p style="color: red;">{{ error }}</p>
   {% endif %}
 
+  {% if request.args.get('registered') %}
+  <p style="color: green;">Tunnus luotu onnistuneesti! Kirjaudu sisään.</p>
+  {% endif %}
+
   <form action="/login" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>
       Tunnus: <br />
       <input type="text" name="username" />
