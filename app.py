@@ -138,7 +138,7 @@ def send():
     
     user_id = user[0]
     
-    db_conn.execute("INSERT INTO tickets (user_id, artist, venue, event_date, price, category_id, description) VALUES (?, ?, ?, ?, ?, ?)", 
+    db_conn.execute("INSERT INTO tickets (user_id, artist, venue, event_date, price, category_id, description) VALUES (?, ?, ?, ?, ?, ?, ?)", 
                    [user_id, artist, venue, event_date, price, category_id, description])
     db_conn.commit()
     db_conn.close()
