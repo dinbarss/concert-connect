@@ -41,3 +41,31 @@ body {
         border-radius: 4px;
         cursor: pointer;
     }
+
+    .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    }
+
+    .search-bar input[type="text"] {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .search-bar button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 20px;
+        background-color: #e63946;
+        color: white;
+        cursor: pointer;
+    }
+
+    .search-bar button:hover {
+        background-color: #c5303d;
+    }

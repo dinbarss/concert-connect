@@ -17,6 +17,14 @@
   </p>
   
   <p>Liput saatavilla: {{ count }}</p>
+
+  <form action="/" method="get" class="search-bar">
+    <input type="text" name="search" placeholder="Etsi artistia, paikkaa..." value="{{ search_query if search_query }}">
+    <button type="submit">🔍 Etsi</button>
+    {% if search_query %}
+      <a href="/">Näytä kaikki</a>
+    {% endif %}
+  </form>
   
   <p><a href="/new_ticket">Lisää lippu</a></p>
 
