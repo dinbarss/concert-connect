@@ -37,7 +37,7 @@ def show_ticket(ticket_id):
     """, [ticket_id]).fetchone()
     
     comments = db_conn.execute("""
-        SELECT cm.content, cm.created_at, u.username
+        SELECT cm.content, cm.created_at, u.username, u.id as user_id
         FROM comments cm
         JOIN users u ON cm.user_id = u.id
         WHERE cm.ticket_id = ?
@@ -106,6 +106,12 @@ def create():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    username = request.form["username"].strip()
+    password1 = request.form["password1"]
+    password2 = request.form["password2"]
+
+    if not username or not password1 or not password2:
+        return render_template("register.html", error="Kaikki kentät on täytettävä")
     if password1 != password2:
         return render_template("register.html", error="Syöttämäsi salasanat eivät täsmää. Yritä uudelleen.")
     password_hash = generate_password_hash(password1)
@@ -121,23 +127,22 @@ def create():
 
 # Ticket search
 @app.route("/")
-def index():
+def search_ticket():
     search_query = request.args.get('search', '')  # Get search parameter from URL
     
     db_conn = sqlite3.connect("database.db")
     db_conn.row_factory = sqlite3.Row
     
     if search_query:
-        # Search in artist, venue, and description
         tickets = db_conn.execute('''
-            SELECT t.id, t.user_id, t.artist, t.venue, t.event_date, t.price, t.description, u.username 
+            SELECT t.id, t.user_id, t.artist, t.venue, t.event_date, t.price, t.description, u.username, c.name as category_name
             FROM tickets t 
             JOIN users u ON t.user_id = u.id 
-            WHERE t.artist LIKE ? OR t.venue LIKE ? OR t.description LIKE ?
+            LEFT JOIN categories c ON t.category_id = c.id
+            WHERE t.artist LIKE ? OR t.venue LIKE ? OR t.description LIKE ? OR c.name LIKE ?
             ORDER BY t.created_at DESC
-        ''', [f'%{search_query}%', f'%{search_query}%', f'%{search_query}%']).fetchall()
+        ''', [f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%']).fetchall()
     else:
-        # Show all tickets if no search
         tickets = db_conn.execute('''
             SELECT t.id, t.user_id, t.artist, t.venue, t.event_date, t.price, t.description, u.username, c.name as category_name
             FROM tickets t 
@@ -152,6 +157,7 @@ def index():
 
 @app.route("/new_ticket")
 def new_ticket():
+    print("session:", dict(session))
     if "username" not in session:
         return redirect("/login")
     categories = db.query("SELECT id, name FROM categories", [])
@@ -163,15 +169,27 @@ def send():
         return redirect("/login")
     check_csrf()
 
-    artist = request.form["artist"]
-    venue = request.form["venue"]
+    artist = request.form["artist"].strip()
+    venue = request.form["venue"].strip()
     event_date = request.form["event_date"]
     price = request.form["price"]
     description = request.form["description"]
     category_id = request.form["category_id"]
 
+    categories = db.query("SELECT id, name FROM categories", [])
+
+    if not artist or not venue:
+        return render_template("new_ticket.html", error="Artisti ja paikka eivät voi olla tyhjiä", categories=categories)
+
+    try:
+        price = float(price)
+        if price < 0:
+            return render_template("new_ticket.html", error="Hinta ei voi olla negatiivinen", categories=categories)
+    except ValueError:
+        return render_template("new_ticket.html", error="Hinta täytyy olla numero", categories=categories)
+
     if event_date < str(date.today()):
-        return render_template("new_ticket.html", error="Et voi valita mennyttä päivämäärää")
+        return render_template("new_ticket.html", error="Et voi valita mennyttä päivämäärää", categories=categories)
     
     db_conn = sqlite3.connect("database.db")
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
@@ -240,8 +258,8 @@ def update_ticket(ticket_id):
         return redirect("/login")
     check_csrf()
 
-    artist = request.form["artist"]
-    venue = request.form["venue"]
+    artist = request.form["artist"].strip()
+    venue = request.form["venue"].strip()
     event_date = request.form["event_date"]
     price = request.form["price"]
     description = request.form["description"]
@@ -250,12 +268,25 @@ def update_ticket(ticket_id):
     db_conn = sqlite3.connect("database.db")
     db_conn.row_factory = sqlite3.Row
     user = db_conn.execute("SELECT id FROM users WHERE username = ?", [session["username"]]).fetchone()
-    ticket = db_conn.execute("SELECT user_id FROM tickets WHERE id = ?", [ticket_id]).fetchone()
+    ticket = db_conn.execute("SELECT * FROM tickets WHERE id = ?", [ticket_id]).fetchone()
+    categories = db.query("SELECT id, name FROM categories", [])
 
-    # the date can't be in the past
+    if not artist or not venue:
+        db_conn.close()
+        return render_template("edit.html", error="Artisti ja paikka eivät voi olla tyhjiä", ticket=ticket, categories=categories)
+
+    try:
+        price = float(price)
+        if price < 0:
+            db_conn.close()
+            return render_template("edit.html", error="Hinta ei voi olla negatiivinen", ticket=ticket, categories=categories)
+    except ValueError:
+        db_conn.close()
+        return render_template("edit.html", error="Hinta täytyy olla numero", ticket=ticket, categories=categories)
+
     if event_date < str(date.today()):
         db_conn.close()
-        return render_template("edit.html", error="Et voi valita mennyttä päivämäärää", ticket=ticket)
+        return render_template("edit.html", error="Et voi valita mennyttä päivämäärää", ticket=ticket, categories=categories)
     
     if user and ticket and ticket["user_id"] == user[0]:
         db_conn.execute('''

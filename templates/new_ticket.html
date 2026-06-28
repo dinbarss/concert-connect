@@ -5,6 +5,10 @@
 {% block content %}
 
   <h1>Lisää uusi konserttilipu</h1>
+
+  {% if error %}
+  <p style="color: red;">{{ error }}</p>
+  {% endif %}
   
   <form action="/send" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -40,9 +44,5 @@
       <input type="submit" value="Lisää lippu" />
     </p>
   </form>
-
-<script>
-  document.getElementById("event_date").min = new Date().toISOString().split("T")[0];
-</script>
 
 {% endblock %}
