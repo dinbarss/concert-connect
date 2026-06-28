@@ -28,7 +28,7 @@
   {% if comments %}
     {% for comment in comments %}
     <div>
-      <p><strong><a href="/user/{{ comment.username }}">{{ comment.username }}</a></strong> — {{ comment.created_at }}</p>
+      <p><strong><a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></strong> — {{ comment.created_at }}</p>
       <p>{{ comment.content }}</p>
     </div>
     <hr />
