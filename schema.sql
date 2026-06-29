@@ -16,13 +16,17 @@ CREATE TABLE tickets (
     venue TEXT NOT NULL,
     event_date TEXT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    category_id INTEGER REFERENCES categories(id),
     section TEXT,
     row TEXT,
     seat TEXT,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE ticket_categories (
+    ticket_id INTEGER REFERENCES tickets(id),
+    category_id INTEGER REFERENCES categories(id)
 );
 
 CREATE TABLE comments (
