@@ -36,7 +36,7 @@
     <p><strong>Hinta:</strong> {{ ticket.price }} €</p>
     <p><strong>Kuvaus:</strong> {{ ticket.description if ticket.description else "Ei kuvausta" }}</p>
     <p><strong>Myyjä:</strong> <a href="/user/{{ ticket.user_id }}">{{ ticket.username }}</a></p>
-    <p><strong>Kategoria:</strong> {{ ticket.category_name }} </p>
+    <p><strong>Kategoria:</strong> {{ ticket.category_names }} </p>
     
     <!-- Show edit/delete buttons only for own tickets -->
     {% if session.username == ticket.username %}

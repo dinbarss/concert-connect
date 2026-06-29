@@ -30,15 +30,15 @@
       Kuvaus: <br />
       <textarea name="description" rows="3" cols="40">{{ ticket.description if ticket.description }}</textarea>
     </p>
-      Kategoria: <br />
-      <select name="category_id">
+      <p>
+        Kategoria(t): <br />
         {% for category in categories %}
-        <option value="{{ category[0] }}" {% if category[0] == ticket.category_id %}selected{% endif %}>
+        <label>
+          <input type="checkbox" name="category_ids" value="{{ category[0] }}">
           {{ category[1] }}
-        </option>
+        </label><br />
         {% endfor %}
-      </select>
-    <p>
+      </p>
       <input type="submit" value="Päivitä lippu" />
     </p>
       
