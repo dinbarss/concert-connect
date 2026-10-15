@@ -1,16 +1,32 @@
+import math
 import sqlite3
 import secrets
 from datetime import date
 from flask import Flask
-from flask import redirect, render_template, request, abort, session
+from flask import redirect, render_template, request, abort, session, g
+import markupsafe
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 import config
 import db
 import users
+#import time
 
 
 app = Flask(__name__)
+
+#@app.before_request
+#def before_request():
+#    g.start_time = time.time()
+
+#@app.after_request
+#def after_request(response):
+#    elapsed_time = round(time.time() - g.start_time, 2)
+#    if request.path.endswith(('.css', '.js', '.ico', '.png')):
+#        return response
+#    print("elapsed time:", elapsed_time, "s")
+#    return response
+
 app.secret_key = config.secret_key
 
 
@@ -18,6 +34,11 @@ def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -86,14 +107,36 @@ def show_user(user_id):
     user_tickets = users.get_tickets(user_id)
     return render_template("user.html", user=user, tickets=user_tickets)
 
-
-# Ticket search
 @app.route("/")
-def search_ticket():
+@app.route("/<int:page>")
+def search_ticket(page=1):
     search_query = request.args.get('search', '')
+    per_page = 10
 
     db_conn = sqlite3.connect("database.db")
     db_conn.row_factory = sqlite3.Row
+
+    if search_query:
+        total = db_conn.execute('''
+            SELECT COUNT(DISTINCT t.id)
+            FROM tickets t
+            LEFT JOIN ticket_categories tc ON t.id = tc.ticket_id
+            LEFT JOIN categories c ON tc.category_id = c.id
+            WHERE t.artist LIKE ? OR t.venue LIKE ? OR t.description LIKE ?
+                  OR c.name LIKE ?
+        ''', [f'%{search_query}%', f'%{search_query}%',
+              f'%{search_query}%', f'%{search_query}%']).fetchone()[0]
+    else:
+        total = db_conn.execute('SELECT COUNT(*) FROM tickets').fetchone()[0]
+
+    page_count = max(math.ceil(total / per_page), 1)
+
+    if page < 1:
+        db_conn.close()
+        return redirect("/1")
+    if page > page_count:
+        db_conn.close()
+        return redirect("/" + str(page_count))
 
     if search_query:
         tickets = db_conn.execute('''
@@ -108,8 +151,10 @@ def search_ticket():
                   OR c.name LIKE ?
             GROUP BY t.id
             ORDER BY t.created_at DESC
+            LIMIT ? OFFSET ?
         ''', [f'%{search_query}%', f'%{search_query}%',
-              f'%{search_query}%', f'%{search_query}%']).fetchall()
+              f'%{search_query}%', f'%{search_query}%',
+              per_page, (page - 1) * per_page]).fetchall()
     else:
         tickets = db_conn.execute('''
             SELECT t.id, t.user_id, t.artist, t.venue, t.event_date, t.price,
@@ -121,13 +166,13 @@ def search_ticket():
             LEFT JOIN categories c ON tc.category_id = c.id
             GROUP BY t.id
             ORDER BY t.created_at DESC
-        ''').fetchall()
+            LIMIT ? OFFSET ?
+        ''', [per_page, (page - 1) * per_page]).fetchall()
 
     db_conn.close()
-    count = len(tickets)
-    return render_template("index.html", count=count, tickets=tickets,
-                            search_query=search_query)
-
+    return render_template("index.html", tickets=tickets, count=total,
+                            search_query=search_query, page=page,
+                            page_count=page_count)
 
 @app.route("/ticket/<int:ticket_id>")
 def show_ticket(ticket_id):

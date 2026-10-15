@@ -37,5 +37,7 @@ CREATE TABLE comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
+CREATE INDEX idx_tickets_artist_venue ON tickets (artist, venue);
+CREATE INDEX idx_ticket_comments ON comments (ticket_id);
+CREATE INDEX idx_tc_ticket ON ticket_categories (ticket_id);
 
