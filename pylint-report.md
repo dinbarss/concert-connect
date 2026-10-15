@@ -5,22 +5,24 @@ Pylint antaa seuraavan raportin sovelluksesta:
 ```
 ************* Module app
 app.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-app.py:17:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:47:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:53:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:58:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:82:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:92:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:133:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:169:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:177:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:177:0: R0911: Too many return statements (7/6) (too-many-return-statements)
-app.py:241:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:273:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:273:0: R0911: Too many return statements (7/6) (too-many-return-statements)
-app.py:348:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:368:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:33:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:38:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:44:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:68:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:74:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:79:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:103:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:112:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:178:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:214:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:222:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:222:0: R0911: Too many return statements (7/6) (too-many-return-statements)
+app.py:286:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:318:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:318:0: R0911: Too many return statements (7/6) (too-many-return-statements)
+app.py:393:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:413:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:6:0: W0611: Unused g imported from flask (unused-import)
 ************* Module users
 users.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 users.py:4:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -38,7 +40,8 @@ config.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 config.py:1:0: C0103: Constant name "secret_key" doesn't conform to UPPER_CASE naming style (invalid-name)
 
 ------------------------------------------------------------------
-Your code has been rated at 8.71/10 (previous run: 8.67/10, +0.04)
+Your code has been rated at 8.71/10 (previous run: 8.71/10, +0.00)
+
 ```
 
 Käydään seuraavaksi läpi tarkemmin raportin sisältö ja perustellaan, miksi kyseisiä asioita ei ole korjattu sovelluksessa.
