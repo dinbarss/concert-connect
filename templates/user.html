@@ -19,7 +19,7 @@
       <p><strong>Päivämäärä:</strong> {{ ticket.event_date }}</p>
       <p><strong>Hinta:</strong> {{ ticket.price }} €</p>
       {% if ticket.description %}
-      <p><strong>Kuvaus:</strong> {{ ticket.description }}</p>
+      <p><strong>Kuvaus:</strong> {{ ticket.description | show_lines }}</p>
       {% endif %}
       <a href="/ticket/{{ ticket.id }}">Näytä ilmoitus</a>
     </div>
