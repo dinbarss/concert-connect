@@ -53,7 +53,6 @@ Sovellus käynnistyy osoitteeseen: http://127.0.0.1:5000
 8. **Muokkaa/poista**: Kokeile omien lippujesi muokkaamista ja poistamista
 9. **Kirjaudu ulos**: Kirjaudu ulos järjestelmästä
 
-Sovellus käynnistyy osoitteeseen: http://127.0.0.1:5000
 
 ## Testaus suurella tietomäärällä
  
