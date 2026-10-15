@@ -13,7 +13,7 @@
       {{ cat.name }}{% if not loop.last %}, {% endif %}
     {% endfor %}
   </p>
-  <p><strong>Kuvaus:</strong> {{ ticket.description if ticket.description else "Ei kuvausta" }}</p>
+  <p><strong>Kuvaus:</strong> <span class="preserve-lines">{{ ticket.description if ticket.description else "Ei kuvausta" }}</span></p>
   <p><strong>Myyjä:</strong> <a href="/user/{{ ticket.user_id }}">{{ ticket.username }}</a></p>
 
   {% if session.username == ticket.username %}
@@ -33,7 +33,9 @@
     {% for comment in comments %}
     <div>
       <p><strong><a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></strong> — {{ comment.created_at }}</p>
-      <p>{{ comment.content }}</p>
+      <p>
+        {{ comment.content | show_lines }}
+      </p>
     </div>
     <hr />
     {% endfor %}
@@ -45,11 +47,14 @@
   <h3>Lisää kommentti</h3>
   <form action="/comment/{{ ticket.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <textarea name="content" rows="3" cols="40" required></textarea>
+    <label for="content">Kommentti:</label><br />
+    <textarea name="content" id="content" rows="3" cols="40" required></textarea>
+
     <br />
     <input type="submit" value="Lähetä" />
   </form>
   {% else %}
   <p><a href="/login">Kirjaudu sisään</a> kommentoidaksesi.</p>
   {% endif %}
+
 {% endblock %}

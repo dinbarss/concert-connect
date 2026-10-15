@@ -11,39 +11,38 @@
   <form action="/update/{{ ticket.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>
-      Artisti: <br />
-      <input type="text" name="artist" value="{{ ticket.artist }}" required />
+      <label for="artist">Artisti:</label><br />
+      <input type="text" name="artist" id="artist" value="{{ ticket.artist }}" required />
     </p>
     <p>
-      Paikka: <br />
-      <input type="text" name="venue" value="{{ ticket.venue }}" required />
+      <label for="venue">Paikka:</label><br />
+      <input type="text" name="venue" id="venue" value="{{ ticket.venue }}" required />
     </p>
     <p>
-      Päivämäärä: <br />
-      <input type="date" name="event_date" value="{{ ticket.event_date }}" required id="event_date" />
+      <label for="event_date">Päivämäärä:</label><br />
+      <input type="date" name="event_date" id="event_date" value="{{ ticket.event_date }}" required />
     </p>
     <p>
-      Hinta (€): <br />
-      <input type="number" name="price" value="{{ ticket.price }}" step="0.01" required />
+      <label for="price">Hinta (€):</label><br />
+      <input type="number" name="price" id="price" value="{{ ticket.price }}" step="0.01" required />
     </p>
     <p>
-      Kuvaus: <br />
-      <textarea name="description" rows="3" cols="40">{{ ticket.description if ticket.description }}</textarea>
+      <label for="description">Kuvaus:</label><br />
+      <textarea name="description" id="description" rows="3" cols="40">{{ ticket.description if ticket.description }}</textarea>
     </p>
-      <p>
-        Kategoria(t): <br />
-        {% for category in categories %}
-        <label>
-          <input type="checkbox" name="category_ids" value="{{ category[0] }}">
-          {{ category[1] }}
-        </label><br />
-        {% endfor %}
-      </p>
-      <input type="submit" value="Päivitä lippu" />
+    <p>
+      Kategoria(t): <br />
+      {% for category in categories %}
+      <label>
+        <input type="checkbox" name="category_ids" value="{{ category[0] }}"
+               {% if category[0] in ticket_category_ids %}checked{% endif %}>
+        {{ category[1] }}
+      </label><br />
+      {% endfor %}
     </p>
-      
+    <input type="submit" value="Päivitä lippu" />
   </form>
-  
+
   <p><a href="/">Takaisin etusivulle</a></p>
-  
+
 {% endblock %}
