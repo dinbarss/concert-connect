@@ -43,3 +43,17 @@ $ flask run
 9. **Kirjaudu ulos**: Kirjaudu ulos järjestelmästä
 
 Sovellus käynnistyy osoitteeseen: http://127.0.0.1:5000
+
+## Testaus suurella tietomäärällä
+ 
+Sovellus on testattu `seed.py`-skriptillä seuraavilla määrillä:
+ 
+| Entiteetti | Määrä |
+|---|---|
+| Käyttäjät | 1 000 |
+| Liput | 1 000 000 |
+| Kommentit | 10 000 000 |
+ 
+Etusivun latausaika on noin 1.4-2 sekuntia. Hidas suoritusaika johtuu siitä, että kysely yhdistää neljä taulua ja käyttää `GROUP_CONCAT`-funktiota kategorioiden kokoamiseen. Tietokantaan lisättiin indeksit, jotka nopeuttivat sivulatauksia noin 2 sekunnista 1.4 sekuntiin.
+
+
